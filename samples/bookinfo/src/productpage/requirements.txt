@@ -11,6 +11,7 @@ idna==2.6
 itsdangerous==0.24
 Jinja2==2.10
 json2html==1.2.1
+kafka-python
 MarkupSafe==1.0
 requests==2.18.4
 simplejson==3.13.2
