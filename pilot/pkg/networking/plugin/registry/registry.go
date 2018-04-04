@@ -23,6 +23,7 @@ import (
 	"istio.io/istio/pilot/pkg/networking/plugin/authz"
 	"istio.io/istio/pilot/pkg/networking/plugin/envoyfilter"
 	"istio.io/istio/pilot/pkg/networking/plugin/health"
+	"istio.io/istio/pilot/pkg/networking/plugin/cilium"
 	"istio.io/istio/pilot/pkg/networking/plugin/mixer"
 )
 
@@ -32,6 +33,7 @@ var availablePlugins = map[string]plugin.Plugin{
 	plugin.Envoyfilter: envoyfilter.NewPlugin(),
 	plugin.Health:      health.NewPlugin(),
 	plugin.Mixer:       mixer.NewPlugin(),
+	plugin.Cilium:      cilium.NewPlugin(),
 }
 
 // NewPlugins returns a slice of default Plugins.

@@ -39,6 +39,7 @@ import (
 	"istio.io/istio/pilot/pkg/model"
 	"istio.io/istio/pilot/pkg/networking/plugin"
 	"istio.io/istio/pilot/pkg/networking/plugin/authn"
+	"istio.io/istio/pilot/pkg/networking/plugin/cilium"
 	"istio.io/istio/pilot/pkg/networking/util"
 	"istio.io/istio/pkg/log"
 )
@@ -150,11 +151,19 @@ func (configgen *ConfigGeneratorImpl) buildSidecarListeners(env *model.Environme
 		}
 
 		// add an extra listener that binds to the port that is the recipient of the iptables redirect
+		var listenerFilters []listener.ListenerFilter
+		for _, p := range configgen.Plugins {
+			if _, ok := p.(cilium.Plugin); ok {
+				listenerFilters = []listener.ListenerFilter{{Name: "cilium.bpf_metadata"}}
+				break
+			}
+		}
 		listeners = append(listeners, &xdsapi.Listener{
 			Name:           VirtualListenerName,
 			Address:        util.BuildAddress(WildcardAddress, uint32(mesh.ProxyListenPort)),
 			Transparent:    transparent,
 			UseOriginalDst: &google_protobuf.BoolValue{true},
+			ListenerFilters: listenerFilters,
 			FilterChains: []listener.FilterChain{
 				{
 					Filters: []listener.Filter{
