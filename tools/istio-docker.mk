@@ -136,11 +136,31 @@ docker.proxytproxy: pilot/docker/envoy_telemetry.yaml.tmpl
 push.proxytproxy: docker.proxytproxy
 	docker push $(HUB)/proxytproxy:$(TAG)
 
+# Proxy using TPROXY interception
+docker.proxytproxy_debug: tools/deb/envoy_bootstrap_v2.json
+docker.proxytproxy_debug: ${ISTIO_ENVOY_DEBUG_PATH}
+docker.proxytproxy_debug: $(ISTIO_OUT)/pilot-agent
+docker.proxytproxy_debug: pilot/docker/Dockerfile.proxytproxy
+docker.proxytproxy_debug: pilot/docker/envoy_pilot.yaml.tmpl
+docker.proxytproxy_debug: pilot/docker/envoy_policy.yaml.tmpl
+docker.proxytproxy_debug: tools/deb/istio-iptables.sh
+docker.proxytproxy_debug: pilot/docker/envoy_telemetry.yaml.tmpl
+	mkdir -p $(DOCKER_BUILD_TOP)/proxyv2
+	cp ${ISTIO_ENVOY_DEBUG_PATH} $(DOCKER_BUILD_TOP)/proxyv2/envoy
+	cp pilot/docker/*.yaml.tmpl $(DOCKER_BUILD_TOP)/proxyv2/
+	# Not using $^ to avoid 2 copies of envoy
+	cp tools/deb/envoy_bootstrap_v2.json tools/deb/istio-iptables.sh $(ISTIO_OUT)/pilot-agent pilot/docker/Dockerfile.proxyv2 $(DOCKER_BUILD_TOP)/proxyv2/
+	time (cd $(DOCKER_BUILD_TOP)/proxyv2 && \
+		docker build  \
+		  --build-arg proxy_version=istio-proxy:${PROXY_REPO_SHA} \
+		  --build-arg istio_version=${VERSION} \
+		-t $(HUB)/proxytproxy_debug:$(TAG) -f Dockerfile.proxytproxy .)
+
 docker.pilot: $(ISTIO_OUT)/pilot-discovery pilot/docker/certs/cacert.pem pilot/docker/Dockerfile.pilot
 	mkdir -p $(ISTIO_DOCKER)/pilot
 	cp $^ $(ISTIO_DOCKER)/pilot/
 	time (cd $(ISTIO_DOCKER)/pilot && \
-		docker build -t $(HUB)/pilot:$(TAG) -f Dockerfile.pilot .)
+		docker build -t cilium/istio_pilot:$(TAG) -f Dockerfile.pilot .)
 
 # Test app for pilot integration
 docker.app: $(ISTIO_OUT)/pilot-test-client $(ISTIO_OUT)/pilot-test-server \
