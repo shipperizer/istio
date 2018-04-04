@@ -46,6 +46,8 @@ const (
 	Mixer = "mixer"
 	// Snidnat is the name of the mixer plugin passed through the command line
 	Snidnat = "snidnat"
+	// Cilium is the name of the Cilium plugin passed through the command line
+	Cilium = "cilium"
 )
 
 // ModelProtocolToListenerProtocol converts from a model.Protocol to its corresponding plugin.ListenerProtocol
