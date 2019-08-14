@@ -43,6 +43,8 @@ const (
 	Health = "health"
 	// Mixer is the name of the mixer plugin passed through the command line
 	Mixer = "mixer"
+	// Cilium is the name of the Cilium plugin passed through the command line
+	Cilium = "cilium"
 )
 
 // ModelProtocolToListenerProtocol converts from a model.Protocol to its corresponding plugin.ListenerProtocol
