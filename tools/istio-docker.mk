@@ -145,6 +145,18 @@ docker.proxytproxy: pilot/docker/envoy_telemetry.yaml.tmpl
 docker.pilot: $(ISTIO_OUT)/pilot-discovery
 docker.pilot: tests/testdata/certs/cacert.pem
 docker.pilot: pilot/docker/Dockerfile.pilot
+	$(DOCKER_RULE_CILIUM)
+
+# Proxy using TPROXY interception
+docker.proxytproxy: BUILD_ARGS=--build-arg proxy_version=istio-proxy:${PROXY_REPO_SHA} --build-arg istio_version=${VERSION}
+docker.proxytproxy_debug: tools/deb/envoy_bootstrap_v2.json
+docker.proxytproxy_debug: ${ISTIO_ENVOY_DEBUG_PATH}
+docker.proxytproxy_debug: $(ISTIO_OUT)/pilot-agent
+docker.proxytproxy_debug: pilot/docker/Dockerfile.proxytproxy
+docker.proxytproxy_debug: pilot/docker/envoy_pilot.yaml.tmpl
+docker.proxytproxy_debug: pilot/docker/envoy_policy.yaml.tmpl
+docker.proxytproxy_debug: tools/deb/istio-iptables.sh
+docker.proxytproxy_debug: pilot/docker/envoy_telemetry.yaml.tmpl
 	$(DOCKER_RULE)
 
 # Test application
@@ -229,6 +241,7 @@ docker.node-agent-test: $(ISTIO_DOCKER)/node_agent.key
 # 5. This rule finally runs docker build passing $(BUILD_ARGS) to docker if they are specified as a dependency variable
 
 DOCKER_RULE=time (mkdir -p $(DOCKER_BUILD_TOP)/$@ && cp -r $^ $(DOCKER_BUILD_TOP)/$@ && cd $(DOCKER_BUILD_TOP)/$@ && $(BUILD_PRE) docker build $(BUILD_ARGS) -t $(HUB)/$(subst docker.,,$@):$(TAG) -f Dockerfile$(suffix $@) .)
+DOCKER_RULE_CILIUM=time (mkdir -p $(DOCKER_BUILD_TOP)/$@ && cp -r $^ $(DOCKER_BUILD_TOP)/$@ && cd $(DOCKER_BUILD_TOP)/$@ && $(BUILD_PRE) docker build $(BUILD_ARGS) -t cilium/$(subst docker.,istio_,$@):$(TAG) -f Dockerfile$(suffix $@) .)
 
 # This target will package all docker images used in test and release, without re-building
 # go binaries. It is intended for CI/CD systems where the build is done in separate job.
