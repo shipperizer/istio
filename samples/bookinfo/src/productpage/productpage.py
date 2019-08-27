@@ -403,8 +403,8 @@ if __name__ == '__main__':
 
     args = parser.parse_args()
 
-    sys.stderr = Writer('stderr.log')
-    sys.stdout = Writer('stdout.log')
+    #sys.stderr = Writer('stderr.log')
+    #sys.stdout = Writer('stdout.log')
 
     if args.kafka_bootstrap_server:
         print "enable Kafka audit log using bootstrap server %s" % (args.kafka_bootstrap_server,)
