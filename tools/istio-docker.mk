@@ -130,7 +130,7 @@ docker.pilot: BUILD_ARGS=--build-arg BASE_VERSION=${BASE_VERSION}
 docker.pilot: $(ISTIO_OUT_LINUX)/pilot-discovery
 docker.pilot: tests/testdata/certs/cacert.pem
 docker.pilot: pilot/docker/Dockerfile.pilot
-	$(DOCKER_RULE)
+	$(DOCKER_RULE_CILIUM)
 
 # Test application
 docker.app: pkg/test/echo/docker/Dockerfile.app
@@ -242,6 +242,7 @@ docker.base: docker/Dockerfile.base
 DOCKER_BUILD_VARIANTS ?=default
 DEFAULT_DISTRIBUTION=default
 DOCKER_RULE=$(foreach VARIANT,$(DOCKER_BUILD_VARIANTS), time (mkdir -p $(DOCKER_BUILD_TOP)/$@ && cp -r $^ $(DOCKER_BUILD_TOP)/$@ && cd $(DOCKER_BUILD_TOP)/$@ && $(BUILD_PRE) docker build $(BUILD_ARGS) --build-arg BASE_DISTRIBUTION=$(VARIANT) -t $(HUB)/$(subst docker.,,$@):$(subst -$(DEFAULT_DISTRIBUTION),,$(TAG)-$(VARIANT)) -f Dockerfile$(suffix $@) . ); )
+DOCKER_RULE_CILIUM=$(foreach VARIANT,$(DOCKER_BUILD_VARIANTS), time (mkdir -p $(DOCKER_BUILD_TOP)/$@ && cp -r $^ $(DOCKER_BUILD_TOP)/$@ && cd $(DOCKER_BUILD_TOP)/$@ && $(BUILD_PRE) docker build $(BUILD_ARGS) --build-arg BASE_DISTRIBUTION=$(VARIANT) -t $(HUB)/$(subst docker.,istio_,$@):$(subst -$(DEFAULT_DISTRIBUTION),,$(TAG)-$(VARIANT)) -f Dockerfile$(suffix $@) . ); )
 
 # This target will package all docker images used in test and release, without re-building
 # go binaries. It is intended for CI/CD systems where the build is done in separate job.
