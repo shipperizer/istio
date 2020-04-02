@@ -10191,6 +10191,12 @@ func chartsIstioControlIstioAutoinjectNotesTxt() (*asset, error) {
 var _chartsIstioControlIstioAutoinjectFilesInjectionTemplateYaml = []byte(`template: |
   rewriteAppHTTPProbe: {{ valueOrDefault .Values.sidecarInjectorWebhook.rewriteAppHTTPProbe true }}
   initContainers:
+  {{ if .Values.global.proxy_init.dnsProbe -}}
+  - name: dns-probe
+    image: busybox:1.31.1
+    imagePullPolicy: IfNotPresent
+    command: ['sh', '-c', 'max=120; i=0; until nslookup {{ .Values.global.proxy_init.dnsProbe }}; do i=$((i + 1)); if [ $i -eq $max ]; then echo timed-out; exit 1; else sleep 1; fi done ']
+  {{ end -}}
   {{ if ne (annotation .ObjectMeta `+"`"+`sidecar.istio.io/interceptionMode`+"`"+` .ProxyConfig.InterceptionMode) `+"`"+`NONE`+"`"+` }}
   {{ if .Values.istio_cni.enabled -}}
   - name: istio-validation
@@ -10565,7 +10571,11 @@ var _chartsIstioControlIstioAutoinjectFilesInjectionTemplateYaml = []byte(`templ
     {{- end }}
   {{- end }}
     volumeMounts:
-    {{ if (isset .ObjectMeta.Annotations `+"`"+`sidecar.istio.io/bootstrapOverride`+"`"+`) }}
+    {{- if .Values.global.proxy.enableCilium }}
+    - mountPath: /var/run/cilium
+      name: cilium-unix-sock-dir
+    {{- end }}
+    {{- if (isset .ObjectMeta.Annotations `+"`"+`sidecar.istio.io/bootstrapOverride`+"`"+`) }}
     - mountPath: /etc/istio/custom-bootstrap
       name: custom-bootstrap-volume
     {{- end }}
@@ -10586,6 +10596,11 @@ var _chartsIstioControlIstioAutoinjectFilesInjectionTemplateYaml = []byte(`templ
       {{ end }}
       {{- end }}
   volumes:
+  - hostPath:
+  {{- if .Values.global.proxy.enableCilium }}
+      path: /var/run/cilium
+    name: cilium-unix-sock-dir
+  {{- end }}
   {{- if (isset .ObjectMeta.Annotations `+"`"+`sidecar.istio.io/bootstrapOverride`+"`"+`) }}
   - name: custom-bootstrap-volume
     configMap:
@@ -10900,6 +10915,23 @@ data:
       # process should be kept alive after an occasional reload.
       drainDuration: 45s
       parentShutdownDuration: 1m0s
+      #
+      # The mode used to redirect inbound connections to Envoy. This setting
+      # has no effect on outbound traffic: iptables REDIRECT is always used for
+      # outbound connections.
+      # If "REDIRECT", use iptables REDIRECT to NAT and redirect to Envoy.
+      # The "REDIRECT" mode loses source addresses during redirection.
+      # If "TPROXY", use iptables TPROXY to redirect to Envoy.
+      # The "TPROXY" mode preserves both the source and destination IP
+      # addresses and ports, so that they can be used for advanced filtering
+      # and manipulation.
+      # The "TPROXY" mode also configures the sidecar to run with the
+      # CAP_NET_ADMIN capability, which is required to use TPROXY.
+      {{- if .Values.global.proxy.enableCilium }}
+      interceptionMode: TPROXY
+      {{- else }}
+      #interceptionMode: TPROXY
+      {{- end }}
       #
       # Port where Envoy listens (on local host) for admin commands
       # You can exec into the istio-proxy container in a pod and
@@ -12740,6 +12772,12 @@ var _chartsIstioControlIstioDiscoveryFilesInjectionTemplateYaml = []byte(`# Conf
 template: |
   rewriteAppHTTPProbe: {{ valueOrDefault .Values.sidecarInjectorWebhook.rewriteAppHTTPProbe true }}
   initContainers:
+  {{ if .Values.global.proxy_init.dnsProbe -}}
+  - name: dns-probe
+    image: busybox:1.31.1
+    imagePullPolicy: IfNotPresent
+    command: ['sh', '-c', 'max=120; i=0; until nslookup {{ .Values.global.proxy_init.dnsProbe }}; do i=$((i + 1)); if [ $i -eq $max ]; then echo timed-out; exit 1; else sleep 1; fi done ']
+  {{ end -}}
   {{ if ne (annotation .ObjectMeta `+"`"+`sidecar.istio.io/interceptionMode`+"`"+` .ProxyConfig.InterceptionMode) `+"`"+`NONE`+"`"+` }}
   {{ if .Values.istio_cni.enabled -}}
   - name: istio-validation
@@ -13124,13 +13162,17 @@ template: |
     {{- end }}
   {{- end }}
     volumeMounts:
+    {{- if .Values.global.proxy.enableCilium }}
+    - mountPath: /var/run/cilium
+      name: cilium-unix-sock-dir
+    {{- end }}
     {{- if eq .Values.global.pilotCertProvider "istiod" }}
     - mountPath: /var/run/secrets/istio
       name: istiod-ca-cert
     {{- end }}
     - mountPath: /var/lib/istio/data
       name: istio-data
-    {{ if (isset .ObjectMeta.Annotations `+"`"+`sidecar.istio.io/bootstrapOverride`+"`"+`) }}
+    {{- if (isset .ObjectMeta.Annotations `+"`"+`sidecar.istio.io/bootstrapOverride`+"`"+`) }}
     - mountPath: /etc/istio/custom-bootstrap
       name: custom-bootstrap-volume
     {{- end }}
@@ -13161,6 +13203,11 @@ template: |
       {{ end }}
       {{- end }}
   volumes:
+  {{- if .Values.global.proxy.enableCilium }}
+  - hostPath:
+      path: /var/run/cilium
+    name: cilium-unix-sock-dir
+  {{- end }}
   {{- if (isset .ObjectMeta.Annotations `+"`"+`sidecar.istio.io/bootstrapOverride`+"`"+`) }}
   - name: custom-bootstrap-volume
     configMap:
@@ -14130,6 +14177,23 @@ data:
       # process should be kept alive after an occasional reload.
       drainDuration: 45s
       parentShutdownDuration: 1m0s
+      #
+      # The mode used to redirect inbound connections to Envoy. This setting
+      # has no effect on outbound traffic: iptables REDIRECT is always used for
+      # outbound connections.
+      # If "REDIRECT", use iptables REDIRECT to NAT and redirect to Envoy.
+      # The "REDIRECT" mode loses source addresses during redirection.
+      # If "TPROXY", use iptables TPROXY to redirect to Envoy.
+      # The "TPROXY" mode preserves both the source and destination IP
+      # addresses and ports, so that they can be used for advanced filtering
+      # and manipulation.
+      # The "TPROXY" mode also configures the sidecar to run with the
+      # CAP_NET_ADMIN capability, which is required to use TPROXY.
+      {{- if .Values.global.proxy.enableCilium }}
+      interceptionMode: TPROXY
+      {{- else }}
+      #interceptionMode: TPROXY
+      {{- end }}
       #
       # Port where Envoy listens (on local host) for admin commands
       # You can exec into the istio-proxy container in a pod and
