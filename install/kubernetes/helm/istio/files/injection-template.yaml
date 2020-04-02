@@ -1,5 +1,11 @@
 rewriteAppHTTPProbe: {{ valueOrDefault .Values.sidecarInjectorWebhook.rewriteAppHTTPProbe true }}
 initContainers:
+{{ if .Values.global.proxy_init.dnsProbe -}}
+- name: dns-probe
+  image: busybox:1.31.1
+  imagePullPolicy: IfNotPresent
+  command: ['sh', '-c', 'max=120; i=0; until nslookup {{ .Values.global.proxy_init.dnsProbe }}; do i=$((i + 1)); if [ $i -eq $max ]; then echo timed-out; exit 1; else sleep 1; fi done ']
+{{ end -}}
 {{ if ne (annotation .ObjectMeta `sidecar.istio.io/interceptionMode` .ProxyConfig.InterceptionMode) `NONE` }}
 {{ if .Values.istio_cni.enabled -}}
 - name: istio-validation
@@ -355,7 +361,11 @@ containers:
 {{- end }}
   {{  end -}}
   volumeMounts:
-  {{ if (isset .ObjectMeta.Annotations `sidecar.istio.io/bootstrapOverride`) }}
+  {{- if .Values.global.proxy.enableCilium }}
+  - mountPath: /var/run/cilium
+    name: cilium-unix-sock-dir
+  {{- end }}
+  {{- if (isset .ObjectMeta.Annotations `sidecar.istio.io/bootstrapOverride`) }}
   - mountPath: /etc/istio/custom-bootstrap
     name: custom-bootstrap-volume
   {{- end }}
@@ -389,6 +399,11 @@ containers:
     {{ end }}
     {{- end }}
 volumes:
+{{- if .Values.global.proxy.enableCilium }}
+- hostPath:
+    path: /var/run/cilium
+  name: cilium-unix-sock-dir
+{{- end }}
 {{- if (isset .ObjectMeta.Annotations `sidecar.istio.io/bootstrapOverride`) }}
 - name: custom-bootstrap-volume
   configMap:
