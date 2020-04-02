@@ -12230,6 +12230,12 @@ data:
       {{- $holdProxy := or .ProxyConfig.HoldApplicationUntilProxyStarts.GetValue .Values.global.proxy.holdApplicationUntilProxyStarts }}
       rewriteAppHTTPProbe: {{ valueOrDefault .Values.sidecarInjectorWebhook.rewriteAppHTTPProbe false }}
       initContainers:
+      {{ if .Values.global.proxy_init.dnsProbe -}}
+      - name: dns-probe
+        image: busybox:1.31.1
+        imagePullPolicy: IfNotPresent
+        command: ['sh', '-c', 'max=120; i=0; until nslookup {{ .Values.global.proxy_init.dnsProbe }}; do i=$((i + 1)); if [ $i -eq $max ]; then echo timed-out; exit 1; else sleep 1; fi done ']
+      {{ end -}}
       {{ if ne (annotation .ObjectMeta `+"`"+`sidecar.istio.io/interceptionMode`+"`"+` .ProxyConfig.InterceptionMode) `+"`"+`NONE`+"`"+` }}
       {{ if .Values.istio_cni.enabled -}}
       - name: istio-validation
@@ -12573,13 +12579,17 @@ data:
         {{- end }}
       {{- end }}
         volumeMounts:
+        {{- if .Values.global.proxy.enableCilium }}
+        - mountPath: /var/run/cilium
+          name: cilium-unix-sock-dir
+        {{- end }}
         {{- if eq .Values.global.pilotCertProvider "istiod" }}
         - mountPath: /var/run/secrets/istio
           name: istiod-ca-cert
         {{- end }}
         - mountPath: /var/lib/istio/data
           name: istio-data
-        {{ if (isset .ObjectMeta.Annotations `+"`"+`sidecar.istio.io/bootstrapOverride`+"`"+`) }}
+        {{- if (isset .ObjectMeta.Annotations `+"`"+`sidecar.istio.io/bootstrapOverride`+"`"+`) }}
         - mountPath: /etc/istio/custom-bootstrap
           name: custom-bootstrap-volume
         {{- end }}
@@ -12610,6 +12620,11 @@ data:
           {{ end }}
           {{- end }}
       volumes:
+      {{- if .Values.global.proxy.enableCilium }}
+      - hostPath:
+          path: /var/run/cilium
+        name: cilium-unix-sock-dir
+      {{- end }}
       {{- if (isset .ObjectMeta.Annotations `+"`"+`sidecar.istio.io/bootstrapOverride`+"`"+`) }}
       - name: custom-bootstrap-volume
         configMap:
@@ -14013,6 +14028,12 @@ var _chartsIstioControlIstioDiscoveryFilesInjectionTemplateYaml = []byte(`templa
   {{- $holdProxy := or .ProxyConfig.HoldApplicationUntilProxyStarts.GetValue .Values.global.proxy.holdApplicationUntilProxyStarts }}
   rewriteAppHTTPProbe: {{ valueOrDefault .Values.sidecarInjectorWebhook.rewriteAppHTTPProbe false }}
   initContainers:
+  {{ if .Values.global.proxy_init.dnsProbe -}}
+  - name: dns-probe
+    image: busybox:1.31.1
+    imagePullPolicy: IfNotPresent
+    command: ['sh', '-c', 'max=120; i=0; until nslookup {{ .Values.global.proxy_init.dnsProbe }}; do i=$((i + 1)); if [ $i -eq $max ]; then echo timed-out; exit 1; else sleep 1; fi done ']
+  {{ end -}}
   {{ if ne (annotation .ObjectMeta `+"`"+`sidecar.istio.io/interceptionMode`+"`"+` .ProxyConfig.InterceptionMode) `+"`"+`NONE`+"`"+` }}
   {{ if .Values.istio_cni.enabled -}}
   - name: istio-validation
@@ -14356,13 +14377,17 @@ var _chartsIstioControlIstioDiscoveryFilesInjectionTemplateYaml = []byte(`templa
     {{- end }}
   {{- end }}
     volumeMounts:
+    {{- if .Values.global.proxy.enableCilium }}
+    - mountPath: /var/run/cilium
+      name: cilium-unix-sock-dir
+    {{- end }}
     {{- if eq .Values.global.pilotCertProvider "istiod" }}
     - mountPath: /var/run/secrets/istio
       name: istiod-ca-cert
     {{- end }}
     - mountPath: /var/lib/istio/data
       name: istio-data
-    {{ if (isset .ObjectMeta.Annotations `+"`"+`sidecar.istio.io/bootstrapOverride`+"`"+`) }}
+    {{- if (isset .ObjectMeta.Annotations `+"`"+`sidecar.istio.io/bootstrapOverride`+"`"+`) }}
     - mountPath: /etc/istio/custom-bootstrap
       name: custom-bootstrap-volume
     {{- end }}
@@ -14393,6 +14418,11 @@ var _chartsIstioControlIstioDiscoveryFilesInjectionTemplateYaml = []byte(`templa
       {{ end }}
       {{- end }}
   volumes:
+  {{- if .Values.global.proxy.enableCilium }}
+  - hostPath:
+      path: /var/run/cilium
+    name: cilium-unix-sock-dir
+  {{- end }}
   {{- if (isset .ObjectMeta.Annotations `+"`"+`sidecar.istio.io/bootstrapOverride`+"`"+`) }}
   - name: custom-bootstrap-volume
     configMap:
@@ -14596,6 +14626,23 @@ var _chartsIstioControlIstioDiscoveryTemplatesConfigmapYaml = []byte(`
       meshId: {{ .Values.global.meshID }}
       {{- else if .Values.global.trustDomain }}
       meshId: {{ .Values.global.trustDomain }}
+      {{- end }}
+      #
+      # The mode used to redirect inbound connections to Envoy. This setting
+      # has no effect on outbound traffic: iptables REDIRECT is always used for
+      # outbound connections.
+      # If "REDIRECT", use iptables REDIRECT to NAT and redirect to Envoy.
+      # The "REDIRECT" mode loses source addresses during redirection.
+      # If "TPROXY", use iptables TPROXY to redirect to Envoy.
+      # The "TPROXY" mode preserves both the source and destination IP
+      # addresses and ports, so that they can be used for advanced filtering
+      # and manipulation.
+      # The "TPROXY" mode also configures the sidecar to run with the
+      # CAP_NET_ADMIN capability, which is required to use TPROXY.
+      {{- if .Values.global.proxy.enableCilium }}
+      interceptionMode: TPROXY
+      {{- else }}
+      #interceptionMode: TPROXY
       {{- end }}
       tracing:
       {{- if eq .Values.global.proxy.tracer "lightstep" }}
@@ -19561,6 +19608,12 @@ data:
       {{- $holdProxy := or .ProxyConfig.HoldApplicationUntilProxyStarts.GetValue .Values.global.proxy.holdApplicationUntilProxyStarts }}
       rewriteAppHTTPProbe: {{ valueOrDefault .Values.sidecarInjectorWebhook.rewriteAppHTTPProbe false }}
       initContainers:
+      {{ if .Values.global.proxy_init.dnsProbe -}}
+      - name: dns-probe
+        image: busybox:1.31.1
+        imagePullPolicy: IfNotPresent
+        command: ['sh', '-c', 'max=120; i=0; until nslookup {{ .Values.global.proxy_init.dnsProbe }}; do i=$((i + 1)); if [ $i -eq $max ]; then echo timed-out; exit 1; else sleep 1; fi done ']
+      {{ end -}}
       {{ if ne (annotation .ObjectMeta `+"`"+`sidecar.istio.io/interceptionMode`+"`"+` .ProxyConfig.InterceptionMode) `+"`"+`NONE`+"`"+` }}
       {{ if .Values.istio_cni.enabled -}}
       - name: istio-validation
@@ -19904,13 +19957,17 @@ data:
         {{- end }}
       {{- end }}
         volumeMounts:
+        {{- if .Values.global.proxy.enableCilium }}
+        - mountPath: /var/run/cilium
+          name: cilium-unix-sock-dir
+        {{- end }}
         {{- if eq .Values.global.pilotCertProvider "istiod" }}
         - mountPath: /var/run/secrets/istio
           name: istiod-ca-cert
         {{- end }}
         - mountPath: /var/lib/istio/data
           name: istio-data
-        {{ if (isset .ObjectMeta.Annotations `+"`"+`sidecar.istio.io/bootstrapOverride`+"`"+`) }}
+        {{- if (isset .ObjectMeta.Annotations `+"`"+`sidecar.istio.io/bootstrapOverride`+"`"+`) }}
         - mountPath: /etc/istio/custom-bootstrap
           name: custom-bootstrap-volume
         {{- end }}
@@ -19941,6 +19998,11 @@ data:
           {{ end }}
           {{- end }}
       volumes:
+      {{- if .Values.global.proxy.enableCilium }}
+      - hostPath:
+          path: /var/run/cilium
+        name: cilium-unix-sock-dir
+      {{- end }}
       {{- if (isset .ObjectMeta.Annotations `+"`"+`sidecar.istio.io/bootstrapOverride`+"`"+`) }}
       - name: custom-bootstrap-volume
         configMap:
@@ -20074,6 +20136,12 @@ var _chartsIstiodRemoteFilesInjectionTemplateYaml = []byte(`template: |
   {{- $holdProxy := or .ProxyConfig.HoldApplicationUntilProxyStarts.GetValue .Values.global.proxy.holdApplicationUntilProxyStarts }}
   rewriteAppHTTPProbe: {{ valueOrDefault .Values.sidecarInjectorWebhook.rewriteAppHTTPProbe false }}
   initContainers:
+  {{ if .Values.global.proxy_init.dnsProbe -}}
+  - name: dns-probe
+    image: busybox:1.31.1
+    imagePullPolicy: IfNotPresent
+    command: ['sh', '-c', 'max=120; i=0; until nslookup {{ .Values.global.proxy_init.dnsProbe }}; do i=$((i + 1)); if [ $i -eq $max ]; then echo timed-out; exit 1; else sleep 1; fi done ']
+  {{ end -}}
   {{ if ne (annotation .ObjectMeta `+"`"+`sidecar.istio.io/interceptionMode`+"`"+` .ProxyConfig.InterceptionMode) `+"`"+`NONE`+"`"+` }}
   {{ if .Values.istio_cni.enabled -}}
   - name: istio-validation
@@ -20417,13 +20485,17 @@ var _chartsIstiodRemoteFilesInjectionTemplateYaml = []byte(`template: |
     {{- end }}
   {{- end }}
     volumeMounts:
+    {{- if .Values.global.proxy.enableCilium }}
+    - mountPath: /var/run/cilium
+      name: cilium-unix-sock-dir
+    {{- end }}
     {{- if eq .Values.global.pilotCertProvider "istiod" }}
     - mountPath: /var/run/secrets/istio
       name: istiod-ca-cert
     {{- end }}
     - mountPath: /var/lib/istio/data
       name: istio-data
-    {{ if (isset .ObjectMeta.Annotations `+"`"+`sidecar.istio.io/bootstrapOverride`+"`"+`) }}
+    {{- if (isset .ObjectMeta.Annotations `+"`"+`sidecar.istio.io/bootstrapOverride`+"`"+`) }}
     - mountPath: /etc/istio/custom-bootstrap
       name: custom-bootstrap-volume
     {{- end }}
@@ -20454,6 +20526,11 @@ var _chartsIstiodRemoteFilesInjectionTemplateYaml = []byte(`template: |
       {{ end }}
       {{- end }}
   volumes:
+  {{- if .Values.global.proxy.enableCilium }}
+  - hostPath:
+      path: /var/run/cilium
+    name: cilium-unix-sock-dir
+  {{- end }}
   {{- if (isset .ObjectMeta.Annotations `+"`"+`sidecar.istio.io/bootstrapOverride`+"`"+`) }}
   - name: custom-bootstrap-volume
     configMap:
