@@ -1330,6 +1330,9 @@ enum accessLogEncoding {
 message ProxyConfig {
   google.protobuf.BoolValue enabled = 35;
 
+  // Enable Cilium integration for proxy
+  google.protobuf.BoolValue enableCilium = 99;
+
   // Specifies the path to write the sidecar access log file.
   string accessLogFile = 1;
 
@@ -1469,6 +1472,10 @@ message EnvoyAccessLogtlsSettings {
 message ProxyInitConfig {
   // Specifies the image for the proxy_init container.
   string image = 1;
+
+  // Specifies the DNS name to lookup up in an init container to make sure networking and DNS are functional.
+  string dnsProbe = 99;
+
   // K8s resources settings.
   //
   // See https://kubernetes.io/docs/concepts/configuration/manage-compute-resources-container/#resource-requests-and-limits-of-pod-and-container
