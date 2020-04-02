@@ -5438,6 +5438,17 @@ No
 No
 </td>
 </tr>
+<tr id="ProxyConfig-enableCilium">
+<td><code>enableCilium</code></td>
+<td><code><a href="https://developers.google.com/protocol-buffers/docs/reference/google.protobuf#boolvalue">BoolValue</a></code></td>
+<td>
+<p>Enable Cilium integration for proxy</p>
+
+</td>
+<td>
+No
+</td>
+</tr>
 <tr id="ProxyConfig-accessLogFile">
 <td><code>accessLogFile</code></td>
 <td><code>string</code></td>
@@ -5827,6 +5838,17 @@ No
 <td><code>string</code></td>
 <td>
 <p>Specifies the image for the proxy_init container.</p>
+
+</td>
+<td>
+No
+</td>
+</tr>
+<tr id="ProxyInitConfig-dnsProbe">
+<td><code>dnsProbe</code></td>
+<td><code>string</code></td>
+<td>
+<p>Specifies the DNS name to lookup up in an init container to make sure networking and DNS are functional.</p>
 
 </td>
 <td>
