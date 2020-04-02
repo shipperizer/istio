@@ -168,7 +168,9 @@ def trace():
         return wrapper
     return decorator
 
+
 kafka_producer = None
+
 
 def getForwardHeaders(request):
     headers = {}
@@ -407,7 +409,7 @@ if __name__ == '__main__':
         while kafka_producer is None:
             try:
                 kafka_producer = KafkaProducer(bootstrap_servers=args.kafka_bootstrap_server)
-            except:
+            except BaseException:
                 time.sleep(3)
     p = args.port
     logging.info("start at port %s" % (p))
