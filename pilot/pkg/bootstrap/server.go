@@ -90,6 +90,7 @@ var (
 		plugin.Authz,
 		plugin.Health,
 		plugin.Mixer,
+		plugin.Cilium,
 	}
 
 	enableElection = env.RegisterBoolVar("MASTER_ELECTION",
