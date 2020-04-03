@@ -457,7 +457,7 @@ spec:
           value: cluster.local
         - name: ISTIO_META_CLUSTER_ID
           value: Kubernetes
-        image: gcr.io/istio-testing/proxyv2:latest
+        image: gcr.io/istio-testing/docker.io/cilium/istio_proxy:1.5.2:latest
         imagePullPolicy: IfNotPresent
         name: istio-proxy
         ports:
@@ -731,7 +731,7 @@ spec:
           value: sni-dnat
         - name: ISTIO_META_CLUSTER_ID
           value: Kubernetes
-        image: gcr.io/istio-testing/proxyv2:latest
+        image: docker.io/cilium/istio_proxy:1.5.2
         imagePullPolicy: IfNotPresent
         name: istio-proxy
         ports:

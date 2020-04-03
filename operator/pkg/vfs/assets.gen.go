@@ -15873,7 +15873,7 @@ pilot:
   tag: ""
 
   # Can be a full hub/image:tag
-  image: pilot
+  image: docker.io/cilium/istio_pilot:1.5.2
   traceSampling: 1.0
 
   # Resources for a small pilot install
@@ -41370,7 +41370,8 @@ spec:
       pilotCertProvider: istiod
       jwtPolicy: third-party-jwt
       proxy:
-        image: proxyv2
+        image: docker.io/cilium/istio_proxy:1.5.2
+        enableCilium: true
         clusterDomain: "cluster.local"
         resources:
           requests:
@@ -41425,7 +41426,8 @@ spec:
             interval: 10s
         tracer: "zipkin"
       proxy_init:
-        image: proxyv2
+        image: docker.io/cilium/istio_proxy:1.5.2
+        dnsProbe: "kube-dns.kube-system.svc.cluster.local"
         resources:
           limits:
             cpu: 100m
@@ -41501,7 +41503,7 @@ spec:
       autoscaleMin: 1
       autoscaleMax: 5
       replicaCount: 1
-      image: pilot
+      image: docker.io/cilium/istio_pilot:1.5.2
       traceSampling: 1.0
       configNamespace: istio-config
       appNamespaces: []
