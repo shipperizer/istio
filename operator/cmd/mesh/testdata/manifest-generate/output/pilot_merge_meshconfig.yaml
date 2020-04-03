@@ -12,6 +12,7 @@ data:
       controlPlaneAuthPolicy: NONE
       discoveryAddress: istiod.istio-system.svc:15012
       drainDuration: 45s
+      interceptionMode: TPROXY
       parentShutdownDuration: 1m0s
       proxyAdminPort: 15000
       proxyMetadata:
@@ -58,7 +59,7 @@ data:
     enabled: true
     env: {}
     hub: ""
-    image: pilot
+    image: docker.io/cilium/istio_pilot:1.5.1-1
     ingress:
       ingressClass: istio
       ingressControllerMode: STRICT

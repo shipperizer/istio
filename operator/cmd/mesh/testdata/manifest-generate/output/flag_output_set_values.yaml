@@ -7158,7 +7158,7 @@ data:
     enabled: true
     env: {}
     hub: ""
-    image: pilot
+    image: docker.io/cilium/istio_pilot:1.5.1-1
     ingress:
       ingressClass: istio
       ingressControllerMode: STRICT
@@ -7281,7 +7281,7 @@ data:
       # and manipulation.
       # The "TPROXY" mode also configures the sidecar to run with the
       # CAP_NET_ADMIN capability, which is required to use TPROXY.
-      #interceptionMode: TPROXY
+      interceptionMode: TPROXY
       #
       # Port where Envoy listens (on local host) for admin commands
       # You can exec into the istio-proxy container in a pod and
@@ -7416,7 +7416,7 @@ spec:
         - configMapRef:
             name: istiod
             optional: true
-        image: gcr.io/istio-testing/pilot:latest
+        image: docker.io/cilium/istio_pilot:1.5.1-1
         imagePullPolicy: IfNotPresent
         name: discovery
         ports:
@@ -7584,6 +7584,7 @@ data:
           "componentLogLevel": "misc:error",
           "concurrency": 2,
           "dnsRefreshRate": "300s",
+          "enableCilium": true,
           "enableCoreDump": false,
           "envoyAccessLogService": {
             "enabled": false
@@ -7630,7 +7631,8 @@ data:
           "tracer": "zipkin"
         },
         "proxy_init": {
-          "image": "proxyv2",
+          "dnsProbe": "kube-dns.kube-system.svc.cluster.local",
+          "image": "docker.io/cilium/istio_proxy:1.5.1",
           "resources": {
             "limits": {
               "cpu": "100m",
