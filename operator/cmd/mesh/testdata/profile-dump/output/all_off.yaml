@@ -359,6 +359,7 @@ spec:
         componentLogLevel: misc:error
         concurrency: 2
         dnsRefreshRate: 300s
+        enableCilium: true
         enableCoreDump: false
         envoyAccessLogService:
           enabled: false
@@ -376,7 +377,7 @@ spec:
         excludeIPRanges: ""
         excludeInboundPorts: ""
         excludeOutboundPorts: ""
-        image: proxyv2
+        image: docker.io/cilium/istio_proxy:1.5.9
         includeIPRanges: '*'
         includeInboundPorts: '*'
         kubevirtInterfaces: ""
@@ -396,7 +397,8 @@ spec:
         statusPort: 15020
         tracer: zipkin
       proxy_init:
-        image: proxyv2
+        dnsProbe: kube-dns.kube-system.svc.cluster.local
+        image: docker.io/cilium/istio_proxy:1.5.9
         resources:
           limits:
             cpu: 100m
@@ -555,7 +557,7 @@ spec:
       enableProtocolSniffingForInbound: false
       enableProtocolSniffingForOutbound: true
       env: {}
-      image: pilot
+      image: docker.io/cilium/istio_pilot:1.5.9
       ingress:
         ingressClass: istio
         ingressControllerMode: STRICT

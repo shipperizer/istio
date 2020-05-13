@@ -88,6 +88,7 @@ data:
           "componentLogLevel": "misc:error",
           "concurrency": 2,
           "dnsRefreshRate": "300s",
+          "enableCilium": true,
           "enableCoreDump": false,
           "envoyAccessLogService": {
             "enabled": false
@@ -134,7 +135,8 @@ data:
           "tracer": "zipkin"
         },
         "proxy_init": {
-          "image": "proxyv2",
+          "dnsProbe": "kube-dns.kube-system.svc.cluster.local",
+          "image": "docker.io/cilium/istio_proxy:1.5.9",
           "resources": {
             "limits": {
               "cpu": "100m",

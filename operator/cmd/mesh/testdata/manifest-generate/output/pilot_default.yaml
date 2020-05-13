@@ -490,7 +490,7 @@ data:
     enabled: true
     env: {}
     hub: ""
-    image: pilot
+    image: docker.io/cilium/istio_pilot:1.5.9
     ingress:
       ingressClass: istio
       ingressControllerMode: STRICT
@@ -640,7 +640,7 @@ spec:
         - configMapRef:
             name: istiod
             optional: true
-        image: docker.io/istio/pilot:1.1.4
+        image: docker.io/cilium/istio_pilot:1.5.9
         imagePullPolicy: IfNotPresent
         name: discovery
         ports:
@@ -807,6 +807,7 @@ data:
           "componentLogLevel": "misc:error",
           "concurrency": 2,
           "dnsRefreshRate": "300s",
+          "enableCilium": true,
           "enableCoreDump": false,
           "envoyAccessLogService": {
             "enabled": false
@@ -829,7 +830,7 @@ data:
           "excludeIPRanges": "",
           "excludeInboundPorts": "",
           "excludeOutboundPorts": "",
-          "image": "proxyv2",
+          "image": "docker.io/cilium/istio_proxy:1.5.9",
           "includeIPRanges": "*",
           "includeInboundPorts": "*",
           "kubevirtInterfaces": "",
@@ -853,7 +854,8 @@ data:
           "tracer": "zipkin"
         },
         "proxy_init": {
-          "image": "proxyv2",
+          "dnsProbe": "kube-dns.kube-system.svc.cluster.local",
+          "image": "docker.io/cilium/istio_proxy:1.5.9",
           "resources": {
             "limits": {
               "cpu": "100m",

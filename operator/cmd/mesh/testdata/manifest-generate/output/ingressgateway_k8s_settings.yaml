@@ -35,7 +35,7 @@ spec:
       serviceAccountName: istio-ingressgateway-service-account
       containers:
         - name: istio-proxy
-          image: "docker.io/istio/proxyv2:1.5.9"
+          image: "docker.io/cilium/istio_proxy:1.5.9"
           imagePullPolicy: IfNotPresent
           ports:
             - containerPort: 1234

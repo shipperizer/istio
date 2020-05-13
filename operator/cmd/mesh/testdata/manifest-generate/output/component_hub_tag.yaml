@@ -149,7 +149,7 @@ spec:
           value: sni-dnat
         - name: ISTIO_META_CLUSTER_ID
           value: Kubernetes
-        image: istio-spec.hub/proxyv2:istio-spec.tag
+        image: docker.io/cilium/istio_proxy:1.5.9
         imagePullPolicy: IfNotPresent
         name: istio-proxy
         ports:
@@ -347,7 +347,7 @@ spec:
         - configMapRef:
             name: istiod
             optional: true
-        image: component.pilot.hub/pilot:component.pilot.tag
+        image: docker.io/cilium/istio_pilot:1.5.9
         imagePullPolicy: IfNotPresent
         name: discovery
         ports:
@@ -576,7 +576,7 @@ spec:
           value: cluster.local
         - name: ISTIO_META_CLUSTER_ID
           value: Kubernetes
-        image: istio-spec.hub/proxyv2:istio-spec.tag
+        image: docker.io/cilium/istio_proxy:1.5.9
         imagePullPolicy: IfNotPresent
         name: istio-proxy
         ports:

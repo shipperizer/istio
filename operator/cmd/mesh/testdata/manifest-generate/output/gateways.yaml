@@ -204,7 +204,7 @@ spec:
           value: sni-dnat
         - name: ISTIO_META_CLUSTER_ID
           value: Kubernetes
-        image: docker.io/istio/proxyv2:1.5.9
+        image: docker.io/cilium/istio_proxy:1.5.9
         imagePullPolicy: IfNotPresent
         name: istio-proxy
         ports:
@@ -642,7 +642,7 @@ spec:
           value: sni-dnat
         - name: ISTIO_META_CLUSTER_ID
           value: Kubernetes
-        image: docker.io/istio/proxyv2:1.5.9
+        image: docker.io/cilium/istio_proxy:1.5.9
         imagePullPolicy: IfNotPresent
         name: istio-proxy
         ports:
@@ -1042,7 +1042,7 @@ spec:
           value: sni-dnat
         - name: ISTIO_META_CLUSTER_ID
           value: Kubernetes
-        image: docker.io/istio/proxyv2:1.5.9
+        image: docker.io/cilium/istio_proxy:1.5.9
         imagePullPolicy: IfNotPresent
         name: istio-proxy
         ports:

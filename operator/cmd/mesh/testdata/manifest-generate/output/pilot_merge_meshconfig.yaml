@@ -58,7 +58,7 @@ data:
     enabled: true
     env: {}
     hub: ""
-    image: pilot
+    image: docker.io/cilium/istio_pilot:1.5.9
     ingress:
       ingressClass: istio
       ingressControllerMode: STRICT

@@ -15,7 +15,7 @@ spec:
     metadata:
       annotations:
         sidecar.istio.io/interceptionMode: REDIRECT
-        sidecar.istio.io/status: '{"version":"2a9fada1a242e2152b5d8974d91c34f57268f66223776d7c4946655cc915c826","initContainers":["istio-init"],"containers":["istio-proxy"],"volumes":["istio-envoy","istio-data","podinfo","istio-token","istiod-ca-cert"],"imagePullSecrets":null}'
+        sidecar.istio.io/status: '{"version":"2a9fada1a242e2152b5d8974d91c34f57268f66223776d7c4946655cc915c826","initContainers":["dns-probe","istio-init"],"containers":["istio-proxy"],"volumes":["cilium-unix-sock-dir","istio-envoy","istio-data","podinfo","istio-token","istiod-ca-cert"],"imagePullSecrets":null}'
         traffic.sidecar.istio.io/excludeInboundPorts: "15020"
         traffic.sidecar.istio.io/includeInboundPorts: 80,90
         traffic.sidecar.istio.io/includeOutboundIPRanges: '*'
@@ -151,7 +151,7 @@ spec:
           value: cluster.local
         - name: ISTIO_KUBE_APP_PROBERS
           value: '{"/app-health/hello/livez":{"httpGet":{"port":80}},"/app-health/hello/readyz":{"httpGet":{"port":3333,"scheme":"HTTPS"}},"/app-health/world/livez":{"httpGet":{"port":90}}}'
-        image: docker.io/istio/proxyv2:1.5.9
+        image: docker.io/cilium/istio_proxy:1.5.9
         imagePullPolicy: IfNotPresent
         name: istio-proxy
         ports:
@@ -183,6 +183,8 @@ spec:
           runAsNonRoot: true
           runAsUser: 1337
         volumeMounts:
+        - mountPath: /var/run/cilium
+          name: cilium-unix-sock-dir
         - mountPath: /var/run/secrets/istio
           name: istiod-ca-cert
         - mountPath: /var/lib/istio/data
@@ -194,6 +196,16 @@ spec:
         - mountPath: /etc/istio/pod
           name: podinfo
       initContainers:
+      - command:
+        - sh
+        - -c
+        - 'max=120; i=0; until nslookup kube-dns.kube-system.svc.cluster.local; do
+          i=$((i + 1)); if [ $i -eq $max ]; then echo timed-out; exit 1; else sleep
+          1; fi done '
+        image: busybox:1.31.1
+        imagePullPolicy: IfNotPresent
+        name: dns-probe
+        resources: {}
       - command:
         - istio-iptables
         - -p
@@ -212,7 +224,7 @@ spec:
         - '*'
         - -d
         - 15090,15020
-        image: docker.io/istio/proxyv2:1.5.9
+        image: docker.io/cilium/istio_proxy:1.5.9
         imagePullPolicy: IfNotPresent
         name: istio-init
         resources:
@@ -236,6 +248,9 @@ spec:
           runAsNonRoot: false
           runAsUser: 0
       volumes:
+      - hostPath:
+          path: /var/run/cilium
+        name: cilium-unix-sock-dir
       - emptyDir:
           medium: Memory
         name: istio-envoy
