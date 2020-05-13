@@ -17054,7 +17054,7 @@ pilot:
   tag: ""
 
   # Can be a full hub/image:tag
-  image: pilot
+  image: quay.io/cilium/istio_pilot:1.9.6
   traceSampling: 1.0
 
   # Resources for a small pilot install
@@ -22679,7 +22679,8 @@ spec:
       pilotCertProvider: istiod
       jwtPolicy: third-party-jwt
       proxy:
-        image: proxyv2
+        image: quay.io/cilium/istio_proxy:1.9.6
+        enableCilium: true
         clusterDomain: "cluster.local"
         resources:
           requests:
@@ -22703,7 +22704,8 @@ spec:
         autoInject: enabled
         tracer: "zipkin"
       proxy_init:
-        image: proxyv2
+        image: quay.io/cilium/istio_proxy:1.9.6
+        dnsProbe: "kube-dns.kube-system.svc.cluster.local"
         resources:
           limits:
             cpu: 2000m
@@ -22755,7 +22757,7 @@ spec:
       autoscaleMin: 1
       autoscaleMax: 5
       replicaCount: 1
-      image: pilot
+      image: quay.io/cilium/istio_pilot:1.9.6
       traceSampling: 1.0
       env: {}
       cpu:
