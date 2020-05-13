@@ -13,7 +13,7 @@ pilot:
   tag: ""
 
   # Can be a full hub/image:tag
-  image: pilot
+  image: docker.io/cilium/istio_pilot:1.8.2
   traceSampling: 1.0
 
   # Resources for a small pilot install
