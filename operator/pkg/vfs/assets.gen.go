@@ -17679,7 +17679,8 @@ global:
   centralIstiod: false
 
   proxy:
-    image: proxyv2
+    image: docker.io/cilium/istio_proxy:1.7.6
+    enableCilium: true
 
     # cluster domain. Default value is "cluster.local".
     clusterDomain: "cluster.local"
@@ -17742,7 +17743,8 @@ global:
 
   proxy_init:
     # Base name for the proxy_init container, used to configure iptables.
-    image: proxyv2
+    image: docker.io/cilium/istio_proxy:1.7.6
+    dnsProbe: "kube-dns.kube-system.svc.cluster.local"
     resources:
       limits:
         cpu: 2000m
@@ -22874,7 +22876,7 @@ pilot:
   tag: ""
 
   # Can be a full hub/image:tag
-  image: pilot
+  image: docker.io/cilium/istio_pilot:1.7.6
   traceSampling: 1.0
 
   # Resources for a small pilot install
@@ -48207,7 +48209,8 @@ spec:
       pilotCertProvider: istiod
       jwtPolicy: third-party-jwt
       proxy:
-        image: proxyv2
+        image: docker.io/cilium/istio_proxy:1.7.6
+        enableCilium: true
         clusterDomain: "cluster.local"
         resources:
           requests:
@@ -48231,7 +48234,8 @@ spec:
         autoInject: enabled
         tracer: "zipkin"
       proxy_init:
-        image: proxyv2
+        image: docker.io/cilium/istio_proxy:1.7.6
+        dnsProbe: "kube-dns.kube-system.svc.cluster.local"
         resources:
           limits:
             cpu: 2000m
@@ -48297,7 +48301,7 @@ spec:
       autoscaleMin: 1
       autoscaleMax: 5
       replicaCount: 1
-      image: pilot
+      image: docker.io/cilium/istio_pilot:1.7.6
       traceSampling: 1.0
       configNamespace: istio-config
       appNamespaces: []
