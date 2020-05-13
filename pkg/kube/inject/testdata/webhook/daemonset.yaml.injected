@@ -150,6 +150,8 @@ spec:
           runAsNonRoot: true
           runAsUser: 1337
         volumeMounts:
+        - mountPath: /var/run/cilium
+          name: cilium-unix-sock-dir
         - mountPath: /var/run/secrets/istio
           name: istiod-ca-cert
         - mountPath: /var/lib/istio/data
@@ -161,6 +163,16 @@ spec:
         - mountPath: /etc/istio/pod
           name: podinfo
       initContainers:
+      - command:
+        - sh
+        - -c
+        - 'max=120; i=0; until nslookup kube-dns.kube-system.svc.cluster.local; do
+          i=$((i + 1)); if [ $i -eq $max ]; then echo timed-out; exit 1; else sleep
+          1; fi done '
+        image: busybox:1.31.1
+        imagePullPolicy: IfNotPresent
+        name: dns-probe
+        resources: {}
       - command:
         - istio-iptables
         - -p
@@ -203,6 +215,9 @@ spec:
           runAsNonRoot: false
           runAsUser: 0
       volumes:
+      - hostPath:
+          path: /var/run/cilium
+        name: cilium-unix-sock-dir
       - emptyDir:
           medium: Memory
         name: istio-envoy
