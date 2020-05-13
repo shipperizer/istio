@@ -243,7 +243,7 @@ pilot:
   replicaCount: 1
   rollingMaxSurge: 100%
   rollingMaxUnavailable: 25%
-  image: pilot
+  image: docker.io/cilium/istio_pilot:1.5.9
   traceSampling: 1.0
   resources:
     requests:
@@ -509,7 +509,8 @@ global:
     gatewayName: ingressgateway
     enableHttps: false
   proxy:
-    image: proxyv2
+    image: docker.io/cilium/istio_proxy:1.5.9
+    enableCilium: true
     clusterDomain: "cluster.local"
     resources:
       requests:
@@ -564,7 +565,8 @@ global:
       port: 
     tracer: "zipkin"
   proxy_init:
-    image: proxy_init
+    image: docker.io/cilium/istio_proxy:1.5.9
+    dnsProbe: "kube-dns.kube-system.svc.cluster.local"
     resources:
       limits:
         cpu: 100m

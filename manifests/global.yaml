@@ -69,7 +69,8 @@ global:
     enabled: true
 
   proxy:
-    image: proxyv2
+    image: docker.io/cilium/istio_proxy:1.5.9
+    enableCilium: true
 
     # cluster domain. Default value is "cluster.local".
     clusterDomain: "cluster.local"
@@ -224,7 +225,8 @@ global:
 
   proxy_init:
     # Base name for the proxy_init container, used to configure iptables.
-    image: proxyv2
+    image: docker.io/cilium/istio_proxy:1.5.9
+    dnsProbe: "kube-dns.kube-system.svc.cluster.local"
     resources:
       limits:
         cpu: 100m

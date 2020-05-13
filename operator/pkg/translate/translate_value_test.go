@@ -61,7 +61,7 @@ pilot:
   cpu:
     targetAverageUtilization: 80
   traceSampling: 1.0
-  image: pilot
+  image: docker.io/cilium/istio_pilot:1.5.9
   env:
     GODEBUG: gctrace=1
   podAntiAffinityLabelSelector:
@@ -148,7 +148,7 @@ values:
     policyNamespace: istio-policy
     telemetryNamespace: istio-telemetry
   pilot:
-    image: pilot
+    image: docker.io/cilium/istio_pilot:1.5.9
     traceSampling: 1
     podAntiAffinityLabelSelector:
     - key: istio

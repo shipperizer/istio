@@ -9,7 +9,7 @@ autoscaleMax: 5
 # replicaCount: 1
 rollingMaxSurge: 100%
 rollingMaxUnavailable: 25%
-image: pilot
+image: docker.io/cilium/istio_pilot:1.5.9
 sidecar: true
 traceSampling: 1.0
 # if protocol sniffing is enabled for outbound

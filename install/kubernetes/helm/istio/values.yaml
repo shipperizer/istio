@@ -136,7 +136,10 @@ global:
 
   proxy:
     # use fully qualified image names for alternate path to proxy.
-    image: proxyv2
+    image: docker.io/cilium/istio_proxy:1.5.9
+
+    # Configure proxy to work with Cilium
+    enableCilium: true
 
     # cluster domain. Default value is "cluster.local".
     clusterDomain: "cluster.local"
@@ -297,7 +300,12 @@ global:
 
   proxy_init:
     # Base name for the istio-init container, used to configure iptables.
-    image: proxyv2
+    image: docker.io/cilium/istio_proxy:1.5.9
+
+    # DNS name to probe in the init container. This delays container start until networking and
+    # DNS work. Disabled if "".
+    dnsProbe: "kube-dns.kube-system.svc.cluster.local"
+
     resources:
       limits:
         cpu: 100m
