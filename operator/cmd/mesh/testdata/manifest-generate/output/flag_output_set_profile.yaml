@@ -6519,7 +6519,7 @@ spec:
         - configMapRef:
             name: istiod
             optional: true
-        image: gcr.io/istio-testing/pilot:latest
+        image: docker.io/istio/pilot:1.5.9
         imagePullPolicy: IfNotPresent
         name: discovery
         ports:
@@ -6631,7 +6631,7 @@ data:
         "enableHelmTest": false,
         "enableTracing": true,
         "enabled": true,
-        "hub": "gcr.io/istio-testing",
+        "hub": "docker.io/istio",
         "imagePullPolicy": "IfNotPresent",
         "imagePullSecrets": [],
         "istioNamespace": "istio-system",
@@ -6756,7 +6756,7 @@ data:
         "sts": {
           "servicePort": 0
         },
-        "tag": "latest",
+        "tag": "1.5.9",
         "telemetryNamespace": "istio-system",
         "tracer": {
           "datadog": {

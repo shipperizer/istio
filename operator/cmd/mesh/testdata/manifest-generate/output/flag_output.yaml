@@ -109,7 +109,7 @@ spec:
         - configMapRef:
             name: istiod
             optional: true
-        image: gcr.io/istio-testing/pilot:latest
+        image: docker.io/istio/pilot:1.5.9
         imagePullPolicy: IfNotPresent
         name: discovery
         ports:

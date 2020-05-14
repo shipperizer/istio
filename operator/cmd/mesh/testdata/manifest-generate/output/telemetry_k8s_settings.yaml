@@ -82,7 +82,7 @@ spec:
               fieldPath: metadata.namespace
         - name: GOMAXPROCS
           value: "6"
-        image: gcr.io/istio-testing/mixer:latest
+        image: docker.io/istio/mixer:1.5.9
         imagePullPolicy: IfNotPresent
         livenessProbe:
           httpGet:

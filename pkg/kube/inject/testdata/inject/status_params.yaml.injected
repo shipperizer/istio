@@ -121,7 +121,7 @@ spec:
           value: cluster.local
         - name: ISTIO_KUBE_APP_PROBERS
           value: '{}'
-        image: gcr.io/istio-testing/proxyv2:latest
+        image: docker.io/istio/proxyv2:1.5.9
         imagePullPolicy: IfNotPresent
         name: istio-proxy
         ports:
@@ -182,7 +182,7 @@ spec:
         - '*'
         - -d
         - 15090,123
-        image: gcr.io/istio-testing/proxyv2:latest
+        image: docker.io/istio/proxyv2:1.5.9
         imagePullPolicy: IfNotPresent
         name: istio-init
         resources:

@@ -238,9 +238,9 @@ spec:
           rollingUpdate:
             maxSurge: 100%
             maxUnavailable: 25%
-  hub: gcr.io/istio-testing
+  hub: docker.io/istio
   profile: default
-  tag: latest
+  tag: 1.5.9
   values:
     clusterResources: true
     galley:
