@@ -37,8 +37,8 @@ components:
      enabled: true
 values:
   cni:
-     hub: gcr.io/istio-testing
-     tag: latest
+     hub: docker.io/istio
+     tag: 1.5.4
 `
 		})).
 		Run()
