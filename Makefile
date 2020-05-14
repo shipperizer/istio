@@ -55,6 +55,10 @@ endif
 export TARGET_OUT ?= $(shell pwd)/out/$(TARGET_OS)_$(TARGET_ARCH)
 export TARGET_OUT_LINUX ?= $(shell pwd)/out/linux_amd64
 
+.PHONY: show-target
+show-target:
+	echo $(TARGET_OUT)
+
 ifeq ($(BUILD_WITH_CONTAINER),1)
 export TARGET_OUT = /work/out/$(TARGET_OS)_$(TARGET_ARCH)
 export TARGET_OUT_LINUX = /work/out/linux_amd64
@@ -98,6 +102,9 @@ ENV_VARS+=-e HUB="$(HUB)"
 endif
 ifdef TAG
 ENV_VARS+=-e TAG="$(TAG)"
+endif
+ifdef VERSION
+ENV_VARS+=-e VERSION="$(VERSION)"
 endif
 
 RUN = $(CONTAINER_CLI) run -t -i --sig-proxy=true -u $(UID):$(GID) --rm \
