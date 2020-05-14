@@ -19,7 +19,7 @@ ISTIO_GO := $(shell dirname $(realpath $(lastword $(MAKEFILE_LIST))))
 export ISTIO_GO
 SHELL := /bin/bash -o pipefail
 
-VERSION ?= 1.5-dev
+VERSION ?= 1.5.9
 
 # Base version of Istio image to use
 BASE_VERSION ?= 1.5-dev.8
@@ -28,9 +28,9 @@ export GO111MODULE ?= on
 export GOPROXY ?= https://proxy.golang.org
 export GOSUMDB ?= sum.golang.org
 
-ISTIO_CNI_HUB ?= gcr.io/istio-testing
+ISTIO_CNI_HUB ?= docker.io/istio
 export ISTIO_CNI_HUB
-ISTIO_CNI_TAG ?= latest
+ISTIO_CNI_TAG ?= 1.5.9
 export ISTIO_CNI_TAG
 
 # cumulatively track the directories/files to delete after a clean

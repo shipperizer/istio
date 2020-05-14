@@ -12,8 +12,8 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-HUB ?= gcr.io/istio-testing
-TAG ?= 1.5-dev
+HUB ?= docker.io/istio
+TAG ?= 1.5.9
 
 pwd := $(shell pwd)
 

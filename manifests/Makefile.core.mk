@@ -50,9 +50,9 @@ TOP ?= $(GOPATH)
 export GOPATH
 # TAG of the last stable release of istio. Used for upgrade testing and to verify istioctl.
 # TODO: make sure a '1.1' tag is applied to latest minor release, or have a manifest we can download
-STABLE_TAG = 1.1.0
-HUB ?= gcr.io/istio-testing
-TAG ?= latest
+STABLE_TAG = 1.5.9
+HUB ?= docker.io/istio
+TAG ?= 1.5.9
 export HUB
 export TAG
 EXTRA ?= --set global.hub=${HUB} --set global.tag=${TAG}

@@ -19,7 +19,7 @@ set -eux
 export ARTIFACTS="${ARTIFACTS:-$(mktemp -d)}"
 mkdir -p "${ARTIFACTS}/out"
 
-HUB=istio-testing TAG=istio-testing make -f Makefile.core.mk controller docker
+HUB=docker.io/istio TAG=1.5.9 make -f Makefile.core.mk controller docker
 
 ISTIO_DIR="${GOPATH}/src/istio.io/istio"
 
@@ -62,5 +62,5 @@ make istioctl
 # docker images, rather than pull them. Pulling the images could result in image set A and
 # image set B being tested in the same operator PR e2e check. This would emerge as flakey e2e
 # test code.
-HUB="gcr.io/istio-testing" TAG="latest" E2E_ARGS="--use_operator --use_local_cluster=true --test_logs_path=${ARTIFACTS}" make e2e_simple_noauth
+HUB="docker.io/istio" TAG="1.5.9" E2E_ARGS="--use_operator --use_local_cluster=true --test_logs_path=${ARTIFACTS}" make e2e_simple_noauth
 popd

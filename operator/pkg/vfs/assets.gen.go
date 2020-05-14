@@ -16471,8 +16471,8 @@ func chartsIstioOperatorTemplatesService_accountYaml() (*asset, error) {
 	return a, nil
 }
 
-var _chartsIstioOperatorValuesYaml = []byte(`hub: gcr.io/istio-testing
-tag: 1.5-dev
+var _chartsIstioOperatorValuesYaml = []byte(`hub: docker.io/istio
+tag: 1.5.9
 operatorNamespace: istio-operator
 istioNamespace: istio-system
 `)
@@ -41109,8 +41109,8 @@ kind: IstioOperator
 metadata:
   namespace: istio-system
 spec:
-  hub: gcr.io/istio-testing
-  tag: latest
+  hub: docker.io/istio
+  tag: 1.5.9
 
   # Traffic management feature
   components:
@@ -42012,8 +42012,8 @@ var _profilesEmptyYaml = []byte(`# The empty profile has everything disabled
 apiVersion: install.istio.io/v1alpha1
 kind: IstioOperator
 spec:
-  hub: gcr.io/istio-testing
-  tag: latest
+  hub: docker.io/istio
+  tag: 1.5.9
   meshConfig:
     rootNamespace: istio-system
   components:

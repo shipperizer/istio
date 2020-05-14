@@ -1,8 +1,8 @@
 apiVersion: install.istio.io/v1alpha2
 kind: IstioControlPlane
 spec:
-  hub: gcr.io/istio-testing
-  tag: latest
+  hub: docker.io/istio
+  tag: 1.5.9
   defaultNamespace: istio-system
 
   # Base contains all CRDs, namespaces etc.

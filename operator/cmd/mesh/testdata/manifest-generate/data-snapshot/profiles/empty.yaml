@@ -3,8 +3,8 @@
 apiVersion: install.istio.io/v1alpha1
 kind: IstioOperator
 spec:
-  hub: gcr.io/istio-testing
-  tag: latest
+  hub: docker.io/istio
+  tag: 1.5.9
   meshConfig:
     rootNamespace: istio-system
   components:
