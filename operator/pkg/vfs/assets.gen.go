@@ -16472,7 +16472,7 @@ func chartsIstioOperatorTemplatesService_accountYaml() (*asset, error) {
 }
 
 var _chartsIstioOperatorValuesYaml = []byte(`hub: docker.io/istio
-tag: 1.5.4
+tag: 1.5.6
 operatorNamespace: istio-operator
 istioNamespace: istio-system
 `)
@@ -41110,7 +41110,7 @@ metadata:
   namespace: istio-system
 spec:
   hub: docker.io/istio
-  tag: 1.5.4
+  tag: 1.5.6
 
   # Traffic management feature
   components:
@@ -42013,7 +42013,7 @@ apiVersion: install.istio.io/v1alpha1
 kind: IstioOperator
 spec:
   hub: docker.io/istio
-  tag: 1.5.4
+  tag: 1.5.6
   meshConfig:
     rootNamespace: istio-system
   components:
