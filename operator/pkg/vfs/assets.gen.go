@@ -39754,7 +39754,11 @@ spec:
 {{- end }}
       containers:
         - name: citadel
+{{- if contains "/" .Values.security.image }}
+          image: "{{ .Values.security.image }}"
+{{- else }}
           image: "{{ .Values.global.hub }}/{{ .Values.security.image }}:{{ .Values.global.tag }}"
+{{- end }}
           imagePullPolicy: {{ .Values.global.imagePullPolicy | default "Always" }}
           args:
             {{- if .Values.global.sds.enabled }}
