@@ -82,3 +82,6 @@ tools/istioctl.bash
 vendor
 # Contains the built artifacts
 out/
+cilium-istioctl-*
+# Mac litter
+.DS_Store
