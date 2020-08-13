@@ -26,6 +26,8 @@ const (
 	Authz = "authz"
 	// Health is the name of the health plugin passed through the command line
 	Health = "health"
+	// Cilium is the name of the Cilium plugin passed through the command line
+	Cilium = "cilium"
 )
 
 // InputParams is a set of values passed to Plugin callback methods. Not all fields are guaranteed to
