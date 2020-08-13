@@ -54,3 +54,6 @@ var/
 .idea/
 # Go compiled tests
 *.test
+cilium-istioctl-*
+# Mac litter
+.DS_Store
