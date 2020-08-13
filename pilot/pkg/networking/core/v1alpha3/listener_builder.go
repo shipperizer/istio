@@ -158,6 +158,10 @@ func (lb *ListenerBuilder) aggregateVirtualInboundListener(needTLSForPassThrough
 			append(lb.virtualInboundListener.ListenerFilters, httpInspectorFilter)
 	}
 
+	// Cilium policy enforcement support
+	lb.virtualInboundListener.ListenerFilters =
+		append(lb.virtualInboundListener.ListenerFilters, ciliumBpfMetadataIngressFilter)
+
 	timeout := features.InboundProtocolDetectionTimeout
 	lb.virtualInboundListener.ListenerFiltersTimeout = ptypes.DurationProto(timeout)
 	lb.virtualInboundListener.ContinueOnListenerFiltersTimeout = true
