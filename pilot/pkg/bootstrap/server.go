@@ -82,6 +82,7 @@ var (
 		plugin.Authz,
 		plugin.Health,
 		plugin.Mixer,
+		plugin.Cilium,
 	}
 )
 

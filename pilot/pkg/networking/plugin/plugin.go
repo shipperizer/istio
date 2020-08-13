@@ -33,6 +33,8 @@ const (
 	Health = "health"
 	// Mixer is the name of the mixer plugin passed through the command line
 	Mixer = "mixer"
+	// Cilium is the name of the Cilium plugin passed through the command line
+	Cilium = "cilium"
 )
 
 // InputParams is a set of values passed to Plugin callback methods. Not all fields are guaranteed to
