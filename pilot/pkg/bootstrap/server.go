@@ -83,6 +83,7 @@ var DefaultPlugins = []string{
 	plugin.AuthzCustom,
 	plugin.Authn,
 	plugin.Authz,
+	plugin.Cilium,
 }
 
 const (

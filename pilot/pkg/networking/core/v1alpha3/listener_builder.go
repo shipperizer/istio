@@ -192,6 +192,10 @@ func (lb *ListenerBuilder) aggregateVirtualInboundListener(needTLSForPassThrough
 			append(lb.virtualInboundListener.ListenerFilters, buildHTTPInspector(inspectors))
 	}
 
+	// Cilium policy enforcement support
+	lb.virtualInboundListener.ListenerFilters =
+		append(lb.virtualInboundListener.ListenerFilters, xdsfilters.CiliumBpfMetadataIngressFilter)
+
 	timeout := util.GogoDurationToDuration(lb.push.Mesh.GetProtocolDetectionTimeout())
 	if features.InboundProtocolDetectionTimeoutSet {
 		timeout = ptypes.DurationProto(features.InboundProtocolDetectionTimeout)
