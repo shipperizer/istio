@@ -28,7 +28,7 @@ setup_gcloud_credentials
 # Old prow image does not set this, so needed explicitly here as this is not called through make
 export GO111MODULE=on
 
-DOCKER_HUB=${DOCKER_HUB:-gcr.io/istio-testing}
+DOCKER_HUB=${DOCKER_HUB:-docker.io/istio}
 GCS_BUCKET=${GCS_BUCKET:-istio-build/dev}
 
 # Use a pinned version in case breaking changes are needed
@@ -36,7 +36,7 @@ BUILDER_SHA=78710040a7fb1ccfc7a51f977a1f511da25a5447
 
 # Reference to the next minor version of Istio
 # This will create a version like 1.4-alpha.sha
-NEXT_VERSION=1.9
+NEXT_VERSION=1.10
 TAG=$(git rev-parse HEAD)
 VERSION="${NEXT_VERSION}-alpha.${TAG}"
 

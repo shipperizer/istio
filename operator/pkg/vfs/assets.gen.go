@@ -12066,7 +12066,7 @@ data:
           }
         },
         "externalIstiod": false,
-        "hub": "gcr.io/istio-testing",
+        "hub": "docker.io/istio",
         "imagePullPolicy": "",
         "imagePullSecrets": [],
         "istioNamespace": "istio-system",
@@ -12142,7 +12142,7 @@ data:
         "sts": {
           "servicePort": 0
         },
-        "tag": "latest",
+        "tag": "1.9.6",
         "tracer": {
           "datadog": {
             "address": "$(HOST_IP):8126"
@@ -13013,7 +13013,7 @@ spec:
         fsGroup: 1337
       containers:
         - name: discovery
-          image: "gcr.io/istio-testing/pilot:latest"
+          image: "docker.io/istio/pilot:1.9.6"
           args:
           - "discovery"
           - --monitoringAddr=:15014
@@ -18235,8 +18235,8 @@ func chartsIstioOperatorTemplatesService_accountYaml() (*asset, error) {
 	return a, nil
 }
 
-var _chartsIstioOperatorValuesYaml = []byte(`hub: gcr.io/istio-testing
-tag: latest
+var _chartsIstioOperatorValuesYaml = []byte(`hub: docker.io/istio
+tag: 1.9.6
 
 # ImagePullSecrets for operator ServiceAccount, list of secrets in the same namespace
 # used to pull operator image. Must be set for any cluster configured with private docker registry.
@@ -18634,7 +18634,7 @@ data:
           }
         },
         "externalIstiod": true,
-        "hub": "gcr.io/istio-testing",
+        "hub": "docker.io/istio",
         "imagePullPolicy": "",
         "imagePullSecrets": [],
         "istioNamespace": "istio-system",
@@ -18710,7 +18710,7 @@ data:
         "sts": {
           "servicePort": 0
         },
-        "tag": "latest",
+        "tag": "1.9.6",
         "tracer": {
           "datadog": {
             "address": "$(HOST_IP):8126"
@@ -22631,8 +22631,8 @@ kind: IstioOperator
 metadata:
   namespace: istio-system
 spec:
-  hub: gcr.io/istio-testing
-  tag: latest
+  hub: docker.io/istio
+  tag: 1.9.6
 
   # You may override parts of meshconfig by uncommenting the following lines.
   meshConfig:
