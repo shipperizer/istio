@@ -27,6 +27,7 @@ import (
 	http_conn "github.com/envoyproxy/go-control-plane/envoy/config/filter/network/http_connection_manager/v2"
 	"github.com/envoyproxy/go-control-plane/pkg/wellknown"
 
+	"istio.io/istio/pilot/pkg/networking/plugin/cilium"
 	"istio.io/istio/pilot/pkg/networking/util"
 )
 
@@ -82,6 +83,12 @@ var (
 		Name: OriginalSrc,
 		ConfigType: &listener.ListenerFilter_TypedConfig{
 			TypedConfig: util.MessageToAny(&originalsrc.OriginalSrc{}),
+		},
+	}
+	ciliumBpfMetadataIngressFilter = &listener.ListenerFilter{
+		Name: cilium.CiliumBpfMetadata,
+		ConfigType: &listener.ListenerFilter_TypedConfig{
+			TypedConfig: util.MessageToAny(&cilium.BpfMetadata{IsIngress: true}),
 		},
 	}
 )
