@@ -29,10 +29,10 @@ type operatorDumpArgs struct {
 func addOperatorDumpFlags(cmd *cobra.Command, args *operatorDumpArgs) {
 	hub, tag := buildversion.DockerInfo.Hub, buildversion.DockerInfo.Tag
 	if hub == "" {
-		hub = "gcr.io/istio-testing"
+		hub = "docker.io/istio"
 	}
 	if tag == "" {
-		tag = "latest"
+		tag = "1.6.14"
 	}
 	cmd.PersistentFlags().StringVar(&args.common.hub, "hub", hub, "The hub for the operator controller image")
 	cmd.PersistentFlags().StringVar(&args.common.tag, "tag", tag, "The tag for the operator controller image")

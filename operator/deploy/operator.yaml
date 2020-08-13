@@ -17,7 +17,7 @@ spec:
       serviceAccountName: istio-operator
       containers:
         - name: istio-operator
-          image: gcr.io/istio-testing/operator:1.6-dev
+          image: docker.io/istio/operator:1.6.14
           command:
           - operator
           - server
