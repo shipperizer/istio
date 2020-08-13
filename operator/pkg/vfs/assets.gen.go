@@ -13644,10 +13644,10 @@ global:
   # Default hub for Istio images.
   # Releases are published to docker hub under 'istio' project.
   # Dev builds from prow are on gcr.io
-  hub: gcr.io/istio-testing
+  hub: docker.io/istio
 
   # Default tag for Istio images.
-  tag: latest
+  tag: 1.6.8
 
   # Comma-separated minimum per-scope logging level of messages to output, in the form of <scope>:<level>,<scope>:<level>
   # The control plane has different scopes depending on component, but can configure default log level across all components
@@ -14789,7 +14789,7 @@ data:
         "disablePolicyChecks": true,
         "enableHelmTest": false,
         "enableTracing": true,
-        "hub": "gcr.io/istio-testing",
+        "hub": "docker.io/istio",
         "imagePullPolicy": "",
         "imagePullSecrets": [],
         "istioNamespace": "istio-system",
@@ -14932,7 +14932,7 @@ data:
         "sts": {
           "servicePort": 0
         },
-        "tag": "latest",
+        "tag": "1.6.8",
         "telemetryNamespace": "istio-system",
         "tracer": {
           "datadog": {
@@ -15492,7 +15492,7 @@ spec:
         fsGroup: 1337
       containers:
         - name: discovery
-          image: "gcr.io/istio-testing/pilot:latest"
+          image: "docker.io/istio/pilot:1.6.8"
           args:
           - "discovery"
           - --monitoringAddr=:15014
@@ -19758,8 +19758,8 @@ func chartsIstioOperatorTemplatesService_accountYaml() (*asset, error) {
 	return a, nil
 }
 
-var _chartsIstioOperatorValuesYaml = []byte(`hub: gcr.io/istio-testing
-tag: 1.6-dev
+var _chartsIstioOperatorValuesYaml = []byte(`hub: docker.io/istio
+tag: 1.6.8
 operatorNamespace: istio-operator
 istioNamespace: istio-system
 `)
@@ -40119,7 +40119,7 @@ data:
         "disablePolicyChecks": true,
         "enableHelmTest": false,
         "enableTracing": true,
-        "hub": "gcr.io/istio-testing",
+        "hub": "docker.io/istio",
         "imagePullPolicy": "",
         "imagePullSecrets": [],
         "istioNamespace": "istio-system",
@@ -40262,7 +40262,7 @@ data:
         "sts": {
           "servicePort": 0
         },
-        "tag": "latest",
+        "tag": "1.6.8",
         "telemetryNamespace": "istio-system",
         "tracer": {
           "datadog": {
@@ -41724,8 +41724,8 @@ kind: IstioOperator
 metadata:
   namespace: istio-system
 spec:
-  hub: gcr.io/istio-testing
-  tag: latest
+  hub: docker.io/istio
+  tag: 1.6.8
 
   # You may override parts of meshconfig by uncommenting the following lines.
   meshConfig:
