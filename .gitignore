@@ -55,3 +55,6 @@ out/
 etc/
 var/
 .idea/
+cilium-istioctl-*
+# Mac litter
+.DS_Store
