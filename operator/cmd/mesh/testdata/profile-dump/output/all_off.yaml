@@ -181,14 +181,14 @@ spec:
           rollingUpdate:
             maxSurge: 100%
             maxUnavailable: 25%
-  hub: gcr.io/istio-testing
+  hub: docker.io/istio
 
   meshConfig:
     defaultConfig:
       proxyMetadata: {}
     enablePrometheusMerge: true
   profile: default
-  tag: latest
+  tag: 1.7.6
   values:
     base:
       enableCRDTemplates: false

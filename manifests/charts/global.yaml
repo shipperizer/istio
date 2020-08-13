@@ -33,10 +33,10 @@ global:
   # Default hub for Istio images.
   # Releases are published to docker hub under 'istio' project.
   # Dev builds from prow are on gcr.io
-  hub: gcr.io/istio-testing
+  hub: docker.io/istio
 
   # Default tag for Istio images.
-  tag: latest
+  tag: 1.7.6
 
   # Comma-separated minimum per-scope logging level of messages to output, in the form of <scope>:<level>,<scope>:<level>
   # The control plane has different scopes depending on component, but can configure default log level across all components
