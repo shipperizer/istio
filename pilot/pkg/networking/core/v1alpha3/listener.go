@@ -1821,7 +1821,7 @@ func buildSidecarInboundMgmtListeners(node *model.Proxy, push *model.PushContext
 			}
 			pluginParams := &plugin.InputParams{
 				ListenerProtocol: istionetworking.ListenerProtocolTCP,
-				ListenerCategory: networking.EnvoyFilter_SIDECAR_OUTBOUND,
+				ListenerCategory: networking.EnvoyFilter_SIDECAR_INBOUND,
 				Push:             push,
 				Node:             node,
 				Port:             mPort,
