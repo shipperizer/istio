@@ -828,8 +828,7 @@ allChainsLabel:
 	}
 
 	// call plugins
-	l := buildListener(listenerOpts)
-	l.TrafficDirection = core.TrafficDirection_INBOUND
+	l := buildListener(listenerOpts, core.TrafficDirection_INBOUND)
 
 	mutable := &istionetworking.MutableObjects{
 		Listener:     l,
@@ -1187,8 +1186,7 @@ func (configgen *ConfigGeneratorImpl) buildHTTPProxy(node *model.Proxy,
 		bindToPort:      true,
 		skipUserFilters: true,
 	}
-	l := buildListener(opts)
-	l.TrafficDirection = core.TrafficDirection_OUTBOUND
+	l := buildListener(opts, core.TrafficDirection_OUTBOUND)
 
 	// TODO: plugins for HTTP_PROXY mode, envoyfilter needs another listener match for SIDECAR_HTTP_PROXY
 	// there is no mixer for http_proxy
@@ -1624,9 +1622,8 @@ func (configgen *ConfigGeneratorImpl) buildSidecarOutboundListenerForPortOrUDS(n
 
 	// Lets build the new listener with the filter chains. In the end, we will
 	// merge the filter chains with any existing listener on the same port/bind point
-	l := buildListener(listenerOpts)
+	l := buildListener(listenerOpts, core.TrafficDirection_OUTBOUND)
 	// Note that the fall through route is built at the very end of all outbound listeners
-	l.TrafficDirection = core.TrafficDirection_OUTBOUND
 
 	mutable := &istionetworking.MutableObjects{
 		Listener:     l,
@@ -2091,7 +2088,7 @@ func buildThriftProxy(thriftOpts *thriftListenerOpts) *thrift.ThriftProxy {
 }
 
 // buildListener builds and initializes a Listener proto based on the provided opts. It does not set any filters.
-func buildListener(opts buildListenerOpts) *listener.Listener {
+func buildListener(opts buildListenerOpts, trafficDirection core.TrafficDirection) *listener.Listener {
 	filterChains := make([]*listener.FilterChain, 0, len(opts.filterChainOpts))
 	listenerFiltersMap := make(map[string]bool)
 	var listenerFilters []*listener.ListenerFilter
@@ -2105,6 +2102,11 @@ func buildListener(opts buildListenerOpts) *listener.Listener {
 			break
 		}
 	}
+	if opts.proxy.GetInterceptionMode() == model.InterceptionTproxy && trafficDirection == core.TrafficDirection_INBOUND {
+		listenerFiltersMap[xdsfilters.OriginalSrcFilterName] = true
+		listenerFilters = append(listenerFilters, xdsfilters.OriginalSrc)
+	}
+
 	if needTLSInspector || opts.needHTTPInspector {
 		listenerFiltersMap[wellknown.TlsInspector] = true
 		listenerFilters = append(listenerFilters, xdsfilters.TLSInspector)
@@ -2113,11 +2115,6 @@ func buildListener(opts buildListenerOpts) *listener.Listener {
 	if opts.needHTTPInspector {
 		listenerFiltersMap[wellknown.HttpInspector] = true
 		listenerFilters = append(listenerFilters, xdsfilters.HTTPInspector)
-	}
-
-	if opts.proxy.GetInterceptionMode() == model.InterceptionTproxy {
-		listenerFiltersMap[xdsfilters.OriginalSrcFilterName] = true
-		listenerFilters = append(listenerFilters, xdsfilters.OriginalSrc)
 	}
 
 	for _, chain := range opts.filterChainOpts {
@@ -2180,11 +2177,12 @@ func buildListener(opts buildListenerOpts) *listener.Listener {
 	listener := &listener.Listener{
 		// TODO: need to sanitize the opts.bind if its a UDS socket, as it could have colons, that envoy
 		// doesn't like
-		Name:            opts.bind + "_" + strconv.Itoa(opts.port),
-		Address:         util.BuildAddress(opts.bind, uint32(opts.port)),
-		ListenerFilters: listenerFilters,
-		FilterChains:    filterChains,
-		DeprecatedV1:    deprecatedV1,
+		Name:             opts.bind + "_" + strconv.Itoa(opts.port),
+		Address:          util.BuildAddress(opts.bind, uint32(opts.port)),
+		TrafficDirection: trafficDirection,
+		ListenerFilters:  listenerFilters,
+		FilterChains:     filterChains,
+		DeprecatedV1:     deprecatedV1,
 	}
 
 	if opts.proxy.Type != model.Router {
