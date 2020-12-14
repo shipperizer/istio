@@ -81,7 +81,9 @@ var (
 	originalSrcFilter = &listener.ListenerFilter{
 		Name: OriginalSrc,
 		ConfigType: &listener.ListenerFilter_TypedConfig{
-			TypedConfig: util.MessageToAny(&originalsrc.OriginalSrc{}),
+			TypedConfig: util.MessageToAny(&originalsrc.OriginalSrc{
+				Mark: 1337,
+			}),
 		},
 	}
 )

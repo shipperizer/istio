@@ -822,8 +822,7 @@ allChainsLabel:
 	}
 
 	// call plugins
-	l := buildListener(listenerOpts)
-	l.TrafficDirection = core.TrafficDirection_INBOUND
+	l := buildListener(listenerOpts, core.TrafficDirection_INBOUND)
 
 	mutable := &istionetworking.MutableObjects{
 		Listener:     l,
@@ -1167,8 +1166,7 @@ func (configgen *ConfigGeneratorImpl) buildHTTPProxy(node *model.Proxy,
 		bindToPort:      true,
 		skipUserFilters: true,
 	}
-	l := buildListener(opts)
-	l.TrafficDirection = core.TrafficDirection_OUTBOUND
+	l := buildListener(opts, core.TrafficDirection_OUTBOUND)
 
 	// TODO: plugins for HTTP_PROXY mode, envoyfilter needs another listener match for SIDECAR_HTTP_PROXY
 	// there is no mixer for http_proxy
@@ -1595,9 +1593,8 @@ func (configgen *ConfigGeneratorImpl) buildSidecarOutboundListenerForPortOrUDS(n
 
 	// Lets build the new listener with the filter chains. In the end, we will
 	// merge the filter chains with any existing listener on the same port/bind point
-	l := buildListener(listenerOpts)
+	l := buildListener(listenerOpts, core.TrafficDirection_OUTBOUND)
 	appendListenerFallthroughRoute(l, &listenerOpts, pluginParams.Node, currentListenerEntry)
-	l.TrafficDirection = core.TrafficDirection_OUTBOUND
 
 	mutable := &istionetworking.MutableObjects{
 		Listener:     l,
@@ -1817,8 +1814,7 @@ func buildSidecarInboundMgmtListeners(node *model.Proxy, push *model.PushContext
 				proxy:           node,
 				push:            push,
 			}
-			l := buildListener(listenerOpts)
-			l.TrafficDirection = core.TrafficDirection_INBOUND
+			l := buildListener(listenerOpts, core.TrafficDirection_INBOUND)
 			mutable := &istionetworking.MutableObjects{
 				Listener:     l,
 				FilterChains: []istionetworking.FilterChain{{}},
@@ -2153,7 +2149,7 @@ func buildThriftProxy(thriftOpts *thriftListenerOpts) *thrift_proxy.ThriftProxy 
 }
 
 // buildListener builds and initializes a Listener proto based on the provided opts. It does not set any filters.
-func buildListener(opts buildListenerOpts) *xdsapi.Listener {
+func buildListener(opts buildListenerOpts, trafficDirection core.TrafficDirection) *xdsapi.Listener {
 	filterChains := make([]*listener.FilterChain, 0, len(opts.filterChainOpts))
 	listenerFiltersMap := make(map[string]bool)
 	var listenerFilters []*listener.ListenerFilter
@@ -2167,6 +2163,11 @@ func buildListener(opts buildListenerOpts) *xdsapi.Listener {
 			break
 		}
 	}
+	if opts.proxy.GetInterceptionMode() == model.InterceptionTproxy && trafficDirection == core.TrafficDirection_INBOUND {
+		listenerFiltersMap[OriginalSrc] = true
+		listenerFilters = append(listenerFilters, originalSrcFilter)
+	}
+
 	if needTLSInspector || opts.needHTTPInspector {
 		listenerFiltersMap[wellknown.TlsInspector] = true
 		listenerFilters = append(listenerFilters, tlsInspectorFilter)
@@ -2175,11 +2176,6 @@ func buildListener(opts buildListenerOpts) *xdsapi.Listener {
 	if opts.needHTTPInspector {
 		listenerFiltersMap[wellknown.HttpInspector] = true
 		listenerFilters = append(listenerFilters, httpInspectorFilter)
-	}
-
-	if opts.proxy.GetInterceptionMode() == model.InterceptionTproxy {
-		listenerFiltersMap[OriginalSrc] = true
-		listenerFilters = append(listenerFilters, originalSrcFilter)
 	}
 
 	for _, chain := range opts.filterChainOpts {
@@ -2242,11 +2238,12 @@ func buildListener(opts buildListenerOpts) *xdsapi.Listener {
 	listener := &xdsapi.Listener{
 		// TODO: need to sanitize the opts.bind if its a UDS socket, as it could have colons, that envoy
 		// doesn't like
-		Name:            opts.bind + "_" + strconv.Itoa(opts.port),
-		Address:         util.BuildAddress(opts.bind, uint32(opts.port)),
-		ListenerFilters: listenerFilters,
-		FilterChains:    filterChains,
-		DeprecatedV1:    deprecatedV1,
+		Name:             opts.bind + "_" + strconv.Itoa(opts.port),
+		Address:          util.BuildAddress(opts.bind, uint32(opts.port)),
+		TrafficDirection: trafficDirection,
+		ListenerFilters:  listenerFilters,
+		FilterChains:     filterChains,
+		DeprecatedV1:     deprecatedV1,
 	}
 
 	if opts.proxy.Type != model.Router {
