@@ -135,10 +135,6 @@ func (lb *ListenerBuilder) aggregateVirtualInboundListener(needTLSForPassThrough
 	lb.virtualInboundListener.ListenerFilters = append(lb.virtualInboundListener.ListenerFilters,
 		originalDestinationFilter,
 	)
-	if lb.node.GetInterceptionMode() == model.InterceptionTproxy {
-		lb.virtualInboundListener.ListenerFilters =
-			append(lb.virtualInboundListener.ListenerFilters, originalSrcFilter)
-	}
 	// TODO: Trim the inboundListeners properly. Those that have been added to filter chains should
 	// be removed while those that haven't been added need to remain in the inboundListeners list.
 	filterChains, needTLS := reduceInboundListenerToFilterChains(lb.inboundListeners)

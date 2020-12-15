@@ -2163,10 +2163,6 @@ func buildListener(opts buildListenerOpts, trafficDirection core.TrafficDirectio
 			break
 		}
 	}
-	if opts.proxy.GetInterceptionMode() == model.InterceptionTproxy && trafficDirection == core.TrafficDirection_INBOUND {
-		listenerFiltersMap[OriginalSrc] = true
-		listenerFilters = append(listenerFilters, originalSrcFilter)
-	}
 
 	if needTLSInspector || opts.needHTTPInspector {
 		listenerFiltersMap[wellknown.TlsInspector] = true
