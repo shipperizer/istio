@@ -26,4 +26,4 @@ else
 fi
 
 set -x      # show the command-line
-docker buildx build --builder skaffold-builder --tag $IMAGE $args "$BUILD_CONTEXT"
+docker buildx build -f $DOCKERFILE --builder skaffold-builder --tag $IMAGE $args "$BUILD_CONTEXT"
