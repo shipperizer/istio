@@ -1,4 +1,4 @@
-FROM ubuntu:bionic
+FROM --platform=$BUILDPLATFORM ubuntu:bionic
 # Base image for debug builds.
 # Built manually uploaded as "istionightly/base_debug"
 
