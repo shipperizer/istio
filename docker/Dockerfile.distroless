@@ -18,3 +18,5 @@ FROM gcr.io/distroless/static-debian10@sha256:60a7d0c45932b6152b2f7ba561db2f91f5
 COPY --from=ubuntu_source /home/etc/passwd /etc/passwd
 COPY --from=ubuntu_source /home/etc/group /etc/group
 COPY --from=ubuntu_source /home/nonroot /home/nonroot
+
+LABEL org.opencontainers.image.source=https://github.com/shipperizer/istio

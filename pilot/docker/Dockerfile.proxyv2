@@ -17,6 +17,8 @@ FROM gcr.io/istio-release/iptables@sha256:e8f940d0d0163ec4563ee070188c1d97308ac0
 # hadolint ignore=DL3006
 FROM ${BASE_DISTRIBUTION}
 
+LABEL org.opencontainers.image.source=https://github.com/shipperizer/istio
+
 WORKDIR /
 
 ARG proxy_version

@@ -7,6 +7,7 @@ ARG BASE_VERSION=latest
 # The following section is used as base image if BASE_DISTRIBUTION=default
 FROM gcr.io/istio-release/base:${BASE_VERSION} as default
 
+LABEL org.opencontainers.image.source=https://github.com/shipperizer/istio
 LABEL description="Istio CNI plugin installer."
 
 COPY istio-cni /opt/cni/bin/
