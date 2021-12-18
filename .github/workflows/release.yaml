@@ -10,11 +10,11 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
-      - uses: GoogleCloudPlatform/release-please-action@v2
-        with:
-          release-type: simple
-          package-name: ""
-          pull-request-title-pattern: "[release] chore${scope}: release${component} ${version}."
+      # - uses: GoogleCloudPlatform/release-please-action@v2
+      # with:
+      #   release-type: simple
+      #   package-name: ""
+      #   pull-request-title-pattern: "[release] chore${scope}: release${component} ${version}."
   build:
     needs: release-please
     runs-on: ubuntu-latest
