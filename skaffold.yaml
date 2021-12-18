@@ -1,0 +1,19 @@
+apiVersion: skaffold/v2beta14
+kind: Config
+build:
+  artifacts:
+  - image: ghcr.io/shipperizer/istio/base
+    custom:
+      buildCommand: ./buildx.sh
+      dependencies:
+        dockerfile:
+          path: docker/Dockerfile.base
+  - image: ghcr.io/shipperizer/istio/distroless
+    custom:
+      buildCommand: ./buildx.sh
+      dependencies:
+        dockerfile:
+          path: docker/Dockerfile.distroless
+  local:
+    push: true
+
